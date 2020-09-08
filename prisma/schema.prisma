@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id       Int        @default(autoincrement()) @id
+  hash     String     @unique
+  title    String
+  roundId  Int
+  Round    Round      @relation(fields: [roundId], references: [id])
+  Question Question[]
+}
+
+model Media {
+  id                                     Int        @default(autoincrement()) @id
+  filename                               String
+  name                                   String
+  size                                   Int
+  type                                   String
+  createdAt                              DateTime   @default(now())
+  MediaType                              MediaType  @relation(fields: [type], references: [alias])
+  Question_MediaToQuestion_answerImageId Question[] @relation("MediaToQuestion_answerImageId")
+  Question_MediaToQuestion_audioId       Question[] @relation("MediaToQuestion_audioId")
+  Question_MediaToQuestion_imageId       Question[] @relation("MediaToQuestion_imageId")
+}
+
+model MediaType {
+  alias String  @id
+  Media Media[]
+}
+
+model Pack {
+  id         Int          @default(autoincrement()) @id
+  hash       String       @unique
+  authorId   Int
+  title      String
+  status     String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @default(now())
+  deletedAt  DateTime
+  User       User         @relation(fields: [authorId], references: [id])
+  PackStatus PackStatus   @relation(fields: [status], references: [alias])
+  PackToUser PackToUser[] @relation("PackTo_PackToUser")
+  Round      Round[]
+}
+
+model PackStatus {
+  alias String @id
+  Pack  Pack[]
+}
+
+model PackToUser {
+  A    Int
+  B    Int
+  Pack Pack @relation("PackTo_PackToUser", fields: [A], references: [id])
+  User User @relation("UserTo_PackToUser", fields: [B], references: [id])
+
+  @@map("_PackToUser")
+  @@unique([A, B], name: "_PackToUser_AB_unique")
+}
+
+model Question {
+  id                                  Int          @default(autoincrement()) @id
+  hash                                String       @unique
+  categoryId                          Int
+  text                                String?
+  answer                              String?
+  price                               Int
+  type                                String
+  timeout                             Int?
+  imageId                             Int?
+  audioId                             Int?
+  answerImageId                       Int?
+  Media_MediaToQuestion_answerImageId Media?       @relation("MediaToQuestion_answerImageId", fields: [answerImageId], references: [id])
+  Media_MediaToQuestion_audioId       Media?       @relation("MediaToQuestion_audioId", fields: [audioId], references: [id])
+  Category                            Category     @relation(fields: [categoryId], references: [id])
+  Media_MediaToQuestion_imageId       Media?       @relation("MediaToQuestion_imageId", fields: [imageId], references: [id])
+  QuestionType                        QuestionType @relation(fields: [type], references: [alias])
+}
+
+model QuestionType {
+  alias    String     @id
+  Question Question[]
+}
+
+model Round {
+  id       Int        @default(autoincrement()) @id
+  packId   Int
+  timeout  Int?
+  isFinal  Boolean    @default(false)
+  Pack     Pack       @relation(fields: [packId], references: [id])
+  Category Category[]
+}
+
+model User {
+  id         Int          @default(autoincrement()) @id
+  name       String?      @default("NULL")
+  email      String       @unique
+  password   String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @default(now())
+  Pack       Pack[]
+  PackToUser PackToUser[] @relation("UserTo_PackToUser")
+}
