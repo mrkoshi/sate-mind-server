@@ -7,103 +7,93 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PackStatus {
+  draft
+  published
+  completed
+}
+
+enum QuestionType {
+  default
+  cat
+  auction
+}
+
 model Category {
-  id       Int        @default(autoincrement()) @id
-  hash     String     @unique
-  title    String
-  roundId  Int
-  Round    Round      @relation(fields: [roundId], references: [id])
-  Question Question[]
-}
+  id          Int         @default(autoincrement()) @id
+  hash        String      @unique
+  title       String
+  roundId     Int         @map(name: "round_id")
+  round       Round       @relation(fields: [roundId], references: [id])
+  questions   Question[]
 
-model Media {
-  id                                     Int        @default(autoincrement()) @id
-  filename                               String
-  name                                   String
-  size                                   Int
-  type                                   String
-  createdAt                              DateTime   @default(now())
-  MediaType                              MediaType  @relation(fields: [type], references: [alias])
-  Question_MediaToQuestion_answerImageId Question[] @relation("MediaToQuestion_answerImageId")
-  Question_MediaToQuestion_audioId       Question[] @relation("MediaToQuestion_audioId")
-  Question_MediaToQuestion_imageId       Question[] @relation("MediaToQuestion_imageId")
-}
-
-model MediaType {
-  alias String  @id
-  Media Media[]
+  @@map(name: "categories")
 }
 
 model Pack {
-  id         Int          @default(autoincrement()) @id
-  hash       String       @unique
-  authorId   Int
-  title      String
-  status     String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @default(now())
-  deletedAt  DateTime
-  User       User         @relation(fields: [authorId], references: [id])
-  PackStatus PackStatus   @relation(fields: [status], references: [alias])
-  PackToUser PackToUser[] @relation("PackTo_PackToUser")
-  Round      Round[]
-}
+  id          Int           @default(autoincrement()) @id
+  hash        String        @unique
+  authorId    Int           @map(name: "author_id")
+  author      User          @relation(fields: [authorId], references: [id])
+  title       String
+  timeout     Int?
+  status      PackStatus
+  createdAt   DateTime      @default(now()) @map(name: "created_at")
+  updatedAt   DateTime      @default(now()) @map(name: "updated_at")
+  deletedAt   DateTime      @map(name: "deleted_at")
+  rounds      Round[]
+  usersLiked  UserPack[]
 
-model PackStatus {
-  alias String @id
-  Pack  Pack[]
-}
-
-model PackToUser {
-  A    Int
-  B    Int
-  Pack Pack @relation("PackTo_PackToUser", fields: [A], references: [id])
-  User User @relation("UserTo_PackToUser", fields: [B], references: [id])
-
-  @@map("_PackToUser")
-  @@unique([A, B], name: "_PackToUser_AB_unique")
+  @@map(name: "packs")
 }
 
 model Question {
-  id                                  Int          @default(autoincrement()) @id
-  hash                                String       @unique
-  categoryId                          Int
-  text                                String?
-  answer                              String?
-  price                               Int
-  type                                String
-  timeout                             Int?
-  imageId                             Int?
-  audioId                             Int?
-  answerImageId                       Int?
-  Media_MediaToQuestion_answerImageId Media?       @relation("MediaToQuestion_answerImageId", fields: [answerImageId], references: [id])
-  Media_MediaToQuestion_audioId       Media?       @relation("MediaToQuestion_audioId", fields: [audioId], references: [id])
-  Category                            Category     @relation(fields: [categoryId], references: [id])
-  Media_MediaToQuestion_imageId       Media?       @relation("MediaToQuestion_imageId", fields: [imageId], references: [id])
-  QuestionType                        QuestionType @relation(fields: [type], references: [alias])
-}
+  id            Int         @default(autoincrement()) @id
+  hash          String      @unique
+  categoryId    Int         @map(name: "category_id")
+  category      Category    @relation(fields: [categoryId], references: [id])
+  text          String?
+  answer        String?
+  price         Int
+  type          QuestionType
+  timeout       Int?
+  image         String?     @default("NULL")
+  imageAnswer   String?     @default("NULL") @map(name: "image_answer")
+  audio         String?     @default("NULL")
 
-model QuestionType {
-  alias    String     @id
-  Question Question[]
+  @@map(name: "questions")
 }
 
 model Round {
-  id       Int        @default(autoincrement()) @id
-  packId   Int
-  timeout  Int?
-  isFinal  Boolean    @default(false)
-  Pack     Pack       @relation(fields: [packId], references: [id])
-  Category Category[]
+  id            Int           @default(autoincrement()) @id
+  packId        Int           @map(name: "pack_id")
+  pack          Pack          @relation(fields: [packId], references: [id])
+  timeout       Int?
+  isFinal       Boolean       @default(false) @map(name: "is_final")
+  categories    Category[]
+
+  @@map(name: "rounds")
+}
+
+model UserPack {
+  pack_id        Int
+  user_id        Int
+  packs          Pack         @relation(fields: [pack_id], references: [id])
+  users          User         @relation(fields: [user_id], references: [id])
+
+  @@unique([pack_id, user_id], name: "pack_id_user_id_unique")
+  @@map(name: "user_packs")
 }
 
 model User {
-  id         Int          @default(autoincrement()) @id
-  name       String?      @default("NULL")
-  email      String       @unique
-  password   String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @default(now())
-  Pack       Pack[]
-  PackToUser PackToUser[] @relation("UserTo_PackToUser")
+  id              Int          @default(autoincrement()) @id
+  name            String?      @default("NULL")
+  email           String       @unique
+  password        String
+  createdAt       DateTime     @default(now()) @map(name: "created_at")
+  updatedAt       DateTime     @default(now()) @map(name: "updated_at")
+  packs           Pack[]
+  packsLiked      UserPack[]
+
+  @@map(name: "users")
 }
