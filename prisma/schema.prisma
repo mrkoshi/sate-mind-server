@@ -7,12 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum PackStatus {
-  draft
-  published
-  completed
-}
-
 enum QuestionType {
   default
   cat
@@ -37,10 +31,10 @@ model Pack {
   author      User          @relation(fields: [authorId], references: [id])
   title       String
   timeout     Int?
-  status      PackStatus
+  isPublished Boolean       @default(false) @map(name: "is_published")
   createdAt   DateTime      @default(now()) @map(name: "created_at")
   updatedAt   DateTime      @default(now()) @map(name: "updated_at")
-  deletedAt   DateTime      @map(name: "deleted_at")
+  deletedAt   DateTime?     @map(name: "deleted_at")
   rounds      Round[]
 
   @@map(name: "packs")

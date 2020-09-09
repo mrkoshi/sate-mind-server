@@ -7,7 +7,7 @@ export const Pack = objectType({
     t.model.hash()
     t.model.author()
     t.model.title()
-    t.model.status()
+    t.model.isPublished()
     t.model.rounds({ pagination: false })
     t.model.createdAt()
     t.model.updatedAt()

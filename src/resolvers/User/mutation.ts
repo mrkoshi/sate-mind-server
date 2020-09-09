@@ -2,7 +2,7 @@ import { compare, hash } from 'bcryptjs'
 import { sign } from 'jsonwebtoken'
 import { inputObjectType, mutationField, stringArg } from '@nexus/schema'
 
-import { APP_SECRET } from '../../utils'
+import { APP_SECRET, getUserId } from '../../utils'
 import { USER_SIGNED_IN } from './subscription'
 
 export const UserInputType = inputObjectType({
@@ -74,5 +74,20 @@ export const signIn = mutationField('signIn', {
       token: sign({ userId: user.id }, APP_SECRET),
       user,
     }
+  },
+})
+
+export const updateUser = mutationField('updateUser', {
+  type: 'User',
+  args: {
+    user: 'UserUpdateInput',
+  },
+  resolve: async (_parent, { user }, ctx) => {
+    const userId = getUserId(ctx)
+
+    return await ctx.prisma.user.update({
+      where: { id: userId },
+      data: user,
+    })
   },
 })

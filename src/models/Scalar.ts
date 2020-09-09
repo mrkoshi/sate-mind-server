@@ -3,26 +3,7 @@ import { asNexusMethod, enumType, scalarType } from '@nexus/schema'
 import { GraphQLDate } from 'graphql-iso-date'
 import { GraphQLUpload } from 'graphql-upload'
 
-enum PackStatusType {
-  draft = 'draft',
-  published = 'published',
-  completed = 'completed'
-}
-
-export const PackStatus = scalarType({
-  name: 'PackStatus',
-  asNexusMethod: 'packStatus',
-  parseValue(value: PackStatusType): PackStatusType {
-    if (PackStatusType[value]) {
-      return value
-    }
-  },
-  serialize(value) {
-    return value
-  },
-})
-
-enum QuestionTypeType {
+enum QuestionTypeEnum {
   default = 'default',
   cat = 'cat',
   auction = 'auction'
@@ -31,8 +12,8 @@ enum QuestionTypeType {
 export const QuestionType = scalarType({
   name: 'QuestionType',
   asNexusMethod: 'questionType',
-  parseValue(value: QuestionTypeType): QuestionTypeType {
-    if (QuestionTypeType[value]) {
+  parseValue(value: QuestionTypeEnum): QuestionTypeEnum {
+    if (QuestionTypeEnum[value]) {
       return value
     }
   },

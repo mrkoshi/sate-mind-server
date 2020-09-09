@@ -28,25 +28,32 @@ scalar Date
 scalar DateTime
 
 type Mutation {
+  createPack(timeout: Int, title: String!): Pack!
+  deletePack(id: Int!): Pack
+  publishPack(id: Int): Pack
   signIn(email: String!, password: String!): AuthPayload!
   signUp(user: UserCreateInput): AuthPayload!
+  updatePack(id: Int!, timeout: Int = null, title: String!): Pack!
+  updateUser(user: UserUpdateInput): User!
 }
 
 type Pack {
   author: User!
   createdAt: DateTime!
-  deletedAt: DateTime!
+  deletedAt: DateTime
   hash: String!
   id: Int!
+  isPublished: Boolean!
   rounds: [Round!]!
-  status: PackStatus!
   title: String!
   updatedAt: DateTime!
 }
 
-scalar PackStatus
-
 type Query {
+  getMyPacks(searchString: String): [Pack!]!
+  getPackByHash(hash: String): Pack
+  getPackById(id: Int): Pack
+  getPacks(searchString: String): [Pack!]!
   me: User
 }
 

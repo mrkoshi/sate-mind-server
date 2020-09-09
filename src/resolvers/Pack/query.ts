@@ -1,49 +1,62 @@
 import { intArg, queryField, stringArg } from '@nexus/schema'
+import { getUserId } from '../../utils'
 
-export const feed = queryField('feed', {
-  type: 'Post',
-  list: true,
-  resolve: (parent, args, ctx) => {
-    return ctx.prisma.post.findMany({
-      where: { published: true },
-    })
-  },
-})
-
-export const filterPosts = queryField('filterPosts', {
-  type: 'Post',
+export const getPacks = queryField('getPacks', {
+  type: 'Pack',
   list: true,
   args: {
     searchString: stringArg({ nullable: true }),
   },
   resolve: (parent, { searchString }, ctx) => {
-    return ctx.prisma.post.findMany({
+    return ctx.prisma.pack.findMany({
       where: {
-        OR: [
-          {
-            title: {
-              contains: searchString,
-            },
-          },
-          {
-            content: {
-              contains: searchString,
-            },
-          },
-        ],
+        title: { contains: searchString },
       },
     })
   },
 })
 
-export const post = queryField('post', {
-  type: 'Post',
+export const getMyPacks = queryField('getMyPacks', {
+  type: 'Pack',
+  list: true,
+  args: {
+    searchString: stringArg({ nullable: true }),
+  },
+  resolve: (parent, { searchString }, ctx) => {
+    const userId = getUserId(ctx)
+
+    return ctx.prisma.pack.findMany({
+      where: {
+        AND: [
+          { authorId: userId },
+          { title: { contains: searchString } }
+        ]
+      },
+    })
+  },
+})
+
+export const getPackById = queryField('getPackById', {
+  type: 'Pack',
   nullable: true,
   args: { id: intArg() },
   resolve: (parent, { id }, ctx) => {
-    return ctx.prisma.post.findOne({
+    return ctx.prisma.pack.findOne({
       where: {
         id: Number(id),
+      },
+    })
+  },
+})
+
+export const getPackByHash = queryField('getPackByHash', {
+  type: 'Pack',
+  nullable: true,
+  args: { hash: stringArg() },
+  resolve: (parent, { hash }, ctx) => {
+    return ctx.prisma.pack.findOne({
+      where: {
+        hash: hash,
       },
     })
   },

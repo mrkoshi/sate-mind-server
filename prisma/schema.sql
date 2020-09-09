@@ -10,15 +10,15 @@ CREATE TABLE users
 
 CREATE TABLE packs
 (
-    id         SERIAL PRIMARY KEY,
-    hash       VARCHAR(60) UNIQUE NOT NULL,
-    author_id  INTEGER            NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    title      VARCHAR(255)       NOT NULL,
-    timeout    SMALLINT                    DEFAULT NULL,
-    status     CHAR(16)           NOT NULL,
-    created_at TIMESTAMPTZ        NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ        NOT NULL DEFAULT NOW(),
-    deleted_at TIMESTAMPTZ        NOT NULL DEFAULT NULL
+    id          SERIAL PRIMARY KEY,
+    hash        VARCHAR(60) UNIQUE NOT NULL,
+    author_id   INTEGER            NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    title       VARCHAR(255)       NOT NULL,
+    timeout     SMALLINT                    DEFAULT NULL,
+    isPublished BOOLEAN            NOT NULL DEFAULT 'false',
+    created_at  TIMESTAMPTZ        NOT NULL DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ        NOT NULL DEFAULT NOW(),
+    deleted_at  TIMESTAMPTZ                 DEFAULT NULL
 );
 
 CREATE TABLE rounds

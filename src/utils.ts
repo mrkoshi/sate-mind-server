@@ -1,5 +1,6 @@
-import { Context } from './context'
 import { verify } from 'jsonwebtoken'
+
+import { Context } from './context'
 
 const { JWT_SECRET } = process.env
 export const APP_SECRET = JWT_SECRET
