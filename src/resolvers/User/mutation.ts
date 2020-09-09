@@ -1,12 +1,9 @@
-import { APP_SECRET, getUserId } from '../../utils'
-import {
-  USER_SIGNED_IN,
-  USER_UPDATED,
-} from './subscription'
 import { compare, hash } from 'bcryptjs'
+import { sign } from 'jsonwebtoken'
 import { inputObjectType, mutationField, stringArg } from '@nexus/schema'
 
-import { sign } from 'jsonwebtoken'
+import { APP_SECRET } from '../../utils'
+import { USER_SIGNED_IN } from './subscription'
 
 export const UserInputType = inputObjectType({
   name: 'UserCreateInput',
@@ -18,24 +15,13 @@ export const UserInputType = inputObjectType({
       required: true,
     })
     t.string('name')
-    t.string('nickname')
-    t.date('birthday')
-    t.gender('gender')
-    t.string('phone')
-    t.string('statusMessage')
   },
 })
 
 export const UserUpdateInputType = inputObjectType({
   name: 'UserUpdateInput',
   definition(t) {
-    t.string('email')
     t.string('name')
-    t.string('nickname')
-    t.date('birthday')
-    t.string('phone')
-    t.string('statusMessage')
-    t.gender('gender')
   },
 })
 
@@ -45,14 +31,13 @@ export const signUp = mutationField('signUp', {
     user: 'UserCreateInput',
   },
   resolve: async (_parent, { user }, ctx) => {
-    const { name, email, password, gender } = user
+    const { name, email, password } = user
     const hashedPassword = await hash(password, 10)
     const created = await ctx.prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        gender,
       },
     })
 
@@ -89,25 +74,5 @@ export const signIn = mutationField('signIn', {
       token: sign({ userId: user.id }, APP_SECRET),
       user,
     }
-  },
-})
-
-export const updateProfile = mutationField('updateProfile', {
-  type: 'User',
-  args: {
-    user: 'UserUpdateInput',
-  },
-  resolve: async (_parent, { user }, ctx) => {
-    const { pubsub } = ctx
-
-    const userId = getUserId(ctx)
-
-    const updated = await ctx.prisma.user.update({
-      where: { id: userId },
-      data: user,
-    })
-
-    pubsub.publish(USER_UPDATED, updated)
-    return updated
   },
 })

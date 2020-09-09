@@ -3,7 +3,7 @@ import { intArg, mutationField, stringArg } from '@nexus/schema'
 import { getUserId } from '../../utils'
 
 export const createDraft = mutationField('createDraft', {
-  type: 'Post',
+  type: 'Pack',
   args: {
     title: stringArg({ nullable: false }),
     content: stringArg(),
@@ -11,7 +11,7 @@ export const createDraft = mutationField('createDraft', {
   resolve: (parent, { title, content }, ctx) => {
     const userId = getUserId(ctx)
 
-    return ctx.prisma.post.create({
+    return ctx.prisma.pack.create({
       data: {
         title,
         content,
@@ -23,11 +23,11 @@ export const createDraft = mutationField('createDraft', {
 })
 
 export const deletePost = mutationField('deletePost', {
-  type: 'Post',
+  type: 'Pack',
   nullable: true,
   args: { id: intArg({ nullable: false }) },
   resolve: (parent, { id }, ctx) => {
-    return ctx.prisma.post.delete({
+    return ctx.prisma.pack.delete({
       where: {
         id,
       },
@@ -36,13 +36,13 @@ export const deletePost = mutationField('deletePost', {
 })
 
 export const publish = mutationField('publish', {
-  type: 'Post',
+  type: 'Pack',
   nullable: true,
   args: { id: intArg() },
   resolve: (parent, { id }, ctx) => {
-    return ctx.prisma.post.update({
+    return ctx.prisma.pack.update({
       where: { id },
-      data: { published: true },
+      data: { status: 'published' },
     })
   },
 })

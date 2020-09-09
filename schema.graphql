@@ -27,6 +27,11 @@ scalar Date
 
 scalar DateTime
 
+type Mutation {
+  signIn(email: String!, password: String!): AuthPayload!
+  signUp(user: UserCreateInput): AuthPayload!
+}
+
 type Pack {
   author: User!
   createdAt: DateTime!
@@ -42,7 +47,7 @@ type Pack {
 scalar PackStatus
 
 type Query {
-  ok: Boolean!
+  me: User
 }
 
 type Question {
@@ -69,6 +74,10 @@ type Round {
   timeout: Int
 }
 
+type Subscription {
+  userSignedIn(userId: Int!): User!
+}
+
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
 
@@ -80,4 +89,14 @@ type User {
   packs: [Pack!]!
   password: String!
   updatedAt: DateTime!
+}
+
+input UserCreateInput {
+  email: String!
+  name: String
+  password: String!
+}
+
+input UserUpdateInput {
+  name: String
 }

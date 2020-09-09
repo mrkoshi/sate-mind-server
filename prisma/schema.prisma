@@ -42,7 +42,6 @@ model Pack {
   updatedAt   DateTime      @default(now()) @map(name: "updated_at")
   deletedAt   DateTime      @map(name: "deleted_at")
   rounds      Round[]
-  usersLiked  UserPack[]
 
   @@map(name: "packs")
 }
@@ -75,16 +74,6 @@ model Round {
   @@map(name: "rounds")
 }
 
-model UserPack {
-  pack_id        Int
-  user_id        Int
-  packs          Pack         @relation(fields: [pack_id], references: [id])
-  users          User         @relation(fields: [user_id], references: [id])
-
-  @@unique([pack_id, user_id], name: "pack_id_user_id_unique")
-  @@map(name: "user_packs")
-}
-
 model User {
   id              Int          @default(autoincrement()) @id
   name            String?      @default("NULL")
@@ -93,7 +82,6 @@ model User {
   createdAt       DateTime     @default(now()) @map(name: "created_at")
   updatedAt       DateTime     @default(now()) @map(name: "updated_at")
   packs           Pack[]
-  packsLiked      UserPack[]
 
   @@map(name: "users")
 }

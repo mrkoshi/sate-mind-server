@@ -8,6 +8,8 @@ import express from 'express'
 import { permissions } from './permissions'
 import { schema } from './schema'
 
+require('dotenv').config()
+
 const { PORT = 4000, NODE_ENV } = process.env
 
 // const schemaWithMiddleware = NODE_ENV === 'test'
