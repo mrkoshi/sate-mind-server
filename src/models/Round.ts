@@ -7,6 +7,6 @@ export const Round = objectType({
     t.model.pack()
     t.model.timeout()
     t.model.isFinal()
-    t.model.categories({ paginate: false })
+    t.model.categories({ pagination: false })
   },
 })

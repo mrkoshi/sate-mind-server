@@ -13,13 +13,24 @@ enum QuestionType {
   auction
 }
 
+enum LobbyState {
+  choise
+  button
+  answer
+  cat
+  auction
+}
+
 model Category {
   id          Int         @default(autoincrement()) @id
   hash        String      @unique
   title       String
+  description String?
   roundId     Int         @map(name: "round_id")
   round       Round       @relation(fields: [roundId], references: [id])
   questions   Question[]
+  createdAt   DateTime    @default(now()) @map(name: "created_at")
+  deletedAt   DateTime?   @map(name: "deleted_at")
 
   @@map(name: "categories")
 }
@@ -30,12 +41,14 @@ model Pack {
   authorId    Int           @map(name: "author_id")
   author      User          @relation(fields: [authorId], references: [id])
   title       String
+  description String?
   timeout     Int?
   isPublished Boolean       @default(false) @map(name: "is_published")
   createdAt   DateTime      @default(now()) @map(name: "created_at")
   updatedAt   DateTime      @default(now()) @map(name: "updated_at")
   deletedAt   DateTime?     @map(name: "deleted_at")
   rounds      Round[]
+  userVotes   UserVote[]
 
   @@map(name: "packs")
 }
@@ -53,6 +66,8 @@ model Question {
   image         String?     @default("NULL")
   imageAnswer   String?     @default("NULL") @map(name: "image_answer")
   audio         String?     @default("NULL")
+  createdAt     DateTime    @default(now()) @map(name: "created_at")
+  deletedAt     DateTime?   @map(name: "deleted_at")
 
   @@map(name: "questions")
 }
@@ -64,18 +79,68 @@ model Round {
   timeout       Int?
   isFinal       Boolean       @default(false) @map(name: "is_final")
   categories    Category[]
+  createdAt     DateTime     @default(now()) @map(name: "created_at")
+  deletedAt     DateTime?    @map(name: "deleted_at")
 
   @@map(name: "rounds")
 }
 
 model User {
-  id              Int          @default(autoincrement()) @id
-  name            String?      @default("NULL")
-  email           String       @unique
-  password        String
-  createdAt       DateTime     @default(now()) @map(name: "created_at")
-  updatedAt       DateTime     @default(now()) @map(name: "updated_at")
-  packs           Pack[]
+  id                Int           @default(autoincrement()) @id
+  name              String?       @default("NULL")
+  email             String        @unique
+  password          String
+  createdAt         DateTime      @default(now()) @map(name: "created_at")
+  updatedAt         DateTime      @default(now()) @map(name: "updated_at")
+  deletedAt         DateTime?     @map(name: "deleted_at")
+  lobbyUsers        LobbyUser[]
+  packs             Pack[]
+  packVotes         UserVote[]
+  answeringInLobby  Lobby[]       @relation("lobbies_answering_user_idTousers")
+  choosingInLobby   Lobby[]       @relation("lobbies_choosing_user_idTousers")
 
   @@map(name: "users")
+}
+
+model UserVote {
+  packId       Int        @map(name: "lobby_id")
+  pack         Pack       @relation(fields: [packId], references: [id])
+  userId       Int        @map(name: "user_id")
+  user         User       @relation(fields: [userId], references: [id])
+  like         Boolean?   @default(false)
+  dislike      Boolean?   @default(false)
+
+  @@map(name: "user_votes")
+  @@id([packId, userId])
+}
+
+model Lobby {
+  id              Int         @default(autoincrement()) @id
+  hash            String      @unique
+  password        String?     @default("NULL")
+  state           LobbyState?
+  choosingUserId  Int?        @map(name: "choosing_user_id")
+  choosingUser    User?       @relation("lobbies_choosing_user_idTousers", fields: [choosingUserId], references: [id])
+  answeringUserId Int?        @map(name: "answering_user_id")
+  answeringUser   User?       @relation("lobbies_answering_user_idTousers", fields: [answeringUserId], references: [id])
+  isStarted       Boolean     @default(false) @map(name: "is_started")
+  game            Json?
+  packId          Int         @map(name: "pack_id")
+  pack            Pack        @relation(fields: [packId], references: [id])
+  timeout         Int?
+  createdAt       DateTime    @default(now()) @map(name: "created_at")
+  deletedAt       DateTime?    @map(name: "deleted_at")
+
+  @@map(name: "lobbies")
+}
+
+model LobbyUser {
+  lobbyId       Int       @map(name: "lobby_id")
+  lobby         Lobby     @relation(fields: [lobbyId], references: [id])
+  userId        Int       @map(name: "user_id")
+  user          User      @relation(fields: [userId], references: [id])
+  score         Int       @default(0)
+
+  @@map(name: "lobby_users")
+  @@id([lobbyId, userId])
 }

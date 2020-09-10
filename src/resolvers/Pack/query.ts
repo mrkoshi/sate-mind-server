@@ -41,6 +41,12 @@ export const getPackById = queryField('getPackById', {
   nullable: true,
   args: { id: intArg() },
   resolve: (parent, { id }, ctx) => {
+    const test = ctx.prisma.pack.findOne({
+      where: {
+        id: Number(id),
+      },
+    })
+
     return ctx.prisma.pack.findOne({
       where: {
         id: Number(id),
