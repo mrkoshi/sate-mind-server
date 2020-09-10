@@ -1,5 +1,6 @@
 export * from './AuthPayload'
 export * from './Category'
+export * from './Lobby'
 export * from './Pack'
 export * from './Question'
 export * from './Round'

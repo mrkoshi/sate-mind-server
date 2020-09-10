@@ -14,5 +14,7 @@ export const Question = objectType({
     t.model.image()
     t.model.imageAnswer()
     t.model.audio()
+    t.model.createdAt()
+    t.model.deletedAt()
   },
 })

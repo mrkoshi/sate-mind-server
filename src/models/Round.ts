@@ -8,5 +8,7 @@ export const Round = objectType({
     t.model.timeout()
     t.model.isFinal()
     t.model.categories({ pagination: false })
+    t.model.createdAt()
+    t.model.deletedAt()
   },
 })

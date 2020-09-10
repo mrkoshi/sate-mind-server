@@ -6,7 +6,10 @@ export const Category = objectType({
     t.model.id()
     t.model.hash()
     t.model.title()
+    t.model.description()
     t.model.round()
     t.model.questions({ pagination: false })
+    t.model.createdAt()
+    t.model.deletedAt()
   },
 })

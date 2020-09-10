@@ -8,6 +8,9 @@ type AuthPayload {
 }
 
 type Category {
+  createdAt: DateTime!
+  deletedAt: DateTime
+  description: String
   hash: String!
   id: Int!
   questions: [Question!]!
@@ -21,6 +24,36 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 scalar Date
 
 scalar DateTime
+
+scalar Json
+
+type Lobby {
+  answeringUser: User
+  choosingUser: User
+  createdAt: DateTime!
+  deletedAt: DateTime
+  game: Json
+  hash: String!
+  id: Int!
+  isStarted: Boolean!
+  pack: Pack!
+  password: String
+  state: LobbyState
+}
+
+enum LobbyState {
+  answer
+  auction
+  button
+  cat
+  choise
+}
+
+type LobbyUser {
+  lobby: Lobby!
+  score: Int!
+  user: User!
+}
 
 type Mutation {
   createPack(timeout: Int, title: String!): Pack!
@@ -36,12 +69,15 @@ type Pack {
   author: User!
   createdAt: DateTime!
   deletedAt: DateTime
+  description: String
   hash: String!
   id: Int!
   isPublished: Boolean!
   rounds: [Round!]!
+  timeout: Int
   title: String!
   updatedAt: DateTime!
+  userVotes: [UserVote!]!
 }
 
 type Query {
@@ -56,6 +92,8 @@ type Question {
   answer: String
   audio: String
   category: Category!
+  createdAt: DateTime!
+  deletedAt: DateTime
   hash: String!
   id: Int!
   image: String
@@ -70,6 +108,8 @@ scalar QuestionType
 
 type Round {
   categories: [Category!]!
+  createdAt: DateTime!
+  deletedAt: DateTime
   id: Int!
   isFinal: Boolean!
   pack: Pack!
@@ -85,10 +125,13 @@ scalar Upload
 
 type User {
   createdAt: DateTime!
+  deletedAt: DateTime
   email: String!
   id: Int!
+  lobbyUsers: [LobbyUser!]!
   name: String
   packs: [Pack!]!
+  packVotes: [UserVote!]!
   password: String!
   updatedAt: DateTime!
 }
@@ -101,4 +144,11 @@ input UserCreateInput {
 
 input UserUpdateInput {
   name: String
+}
+
+type UserVote {
+  dislike: Boolean
+  like: Boolean
+  pack: Pack!
+  user: User!
 }
