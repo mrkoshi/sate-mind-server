@@ -2,6 +2,7 @@ import { intArg, mutationField, stringArg } from '@nexus/schema'
 import { hash } from 'bcryptjs'
 
 import { getUserId } from '../../utils'
+import moment from 'moment'
 
 export const createPack = mutationField('createPack', {
   type: 'Pack',
@@ -37,9 +38,7 @@ export const updatePack = mutationField('updatePack', {
         title,
         timeout,
       },
-      where: {
-        id,
-      }
+      where: { id }
     })
   },
 })
@@ -49,10 +48,9 @@ export const deletePack = mutationField('deletePack', {
   nullable: true,
   args: { id: intArg({ nullable: false }) },
   resolve: (parent, { id }, ctx) => {
-    return ctx.prisma.pack.delete({
-      where: {
-        id,
-      },
+    return ctx.prisma.pack.update({
+      data: { deletedAt: moment().format() },
+      where: { id },
     })
   },
 })

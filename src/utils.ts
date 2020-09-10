@@ -1,12 +1,18 @@
 import { verify } from 'jsonwebtoken'
 
 import { Context } from './context'
+import path from "path"
+
+const envPath = path.resolve(__dirname, '../.env')
+
+// eslint-disable-next-line
+require('dotenv').config({ path: envPath })
 
 const { JWT_SECRET } = process.env
 export const APP_SECRET = JWT_SECRET
 
 interface Token {
-  userId: string;
+  userId: string
 }
 
 export function getUserId(context: Context): number {

@@ -57,11 +57,14 @@ type LobbyUser {
 
 type Mutation {
   createPack(timeout: Int, title: String!): Pack!
+  createRound(isFinal: Boolean, packId: Int!, timeout: Int): Round!
   deletePack(id: Int!): Pack
+  deleteRound(id: Int!): Round
   publishPack(id: Int): Pack
   signIn(email: String!, password: String!): AuthPayload!
   signUp(user: UserCreateInput): AuthPayload!
   updatePack(id: Int!, timeout: Int = null, title: String!): Pack!
+  updateRound(id: Int!, timeout: Int): Round!
   updateUser(user: UserUpdateInput): User!
 }
 
@@ -85,6 +88,8 @@ type Query {
   getPackByHash(hash: String): Pack
   getPackById(id: Int): Pack
   getPacks(searchString: String): [Pack!]!
+  getRoundById(id: Int!, packId: Int!): Round
+  getRounds(packId: Int!): [Round!]!
   me: User
 }
 
