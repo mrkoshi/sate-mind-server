@@ -56,13 +56,16 @@ type LobbyUser {
 }
 
 type Mutation {
+  createCategory(description: String, roundId: Int, title: String!): Category!
   createPack(timeout: Int, title: String!): Pack!
   createRound(isFinal: Boolean, packId: Int!, timeout: Int): Round!
+  deleteCategory(id: Int!): Category
   deletePack(id: Int!): Pack
   deleteRound(id: Int!): Round
   publishPack(id: Int): Pack
   signIn(email: String!, password: String!): AuthPayload!
   signUp(user: UserCreateInput): AuthPayload!
+  updateCategory(description: String, id: Int!, title: String!): Category!
   updatePack(id: Int!, timeout: Int = null, title: String!): Pack!
   updateRound(id: Int!, timeout: Int): Round!
   updateUser(user: UserUpdateInput): User!
@@ -84,6 +87,8 @@ type Pack {
 }
 
 type Query {
+  getCategories(roundId: Int!): [Category!]!
+  getCategoryById(id: Int!, roundId: Int!): Category
   getMyPacks(searchString: String): [Pack!]!
   getPackByHash(hash: String): Pack
   getPackById(id: Int): Pack
