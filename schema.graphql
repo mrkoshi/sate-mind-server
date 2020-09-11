@@ -57,7 +57,7 @@ type LobbyUser {
 
 type Mutation {
   createCategory(description: String, roundId: Int, title: String!): Category!
-  createPack(timeout: Int, title: String!): Pack!
+  createPack(description: String, timeout: Int, title: String!): Pack!
   createRound(isFinal: Boolean, packId: Int!, timeout: Int): Round!
   deleteCategory(id: Int!): Category
   deletePack(id: Int!): Pack
@@ -66,7 +66,7 @@ type Mutation {
   signIn(email: String!, password: String!): AuthPayload!
   signUp(user: UserCreateInput): AuthPayload!
   updateCategory(description: String, id: Int!, title: String!): Category!
-  updatePack(id: Int!, timeout: Int = null, title: String!): Pack!
+  updatePack(description: String, id: Int!, timeout: Int!, title: String!): Pack!
   updateRound(id: Int!, timeout: Int): Round!
   updateUser(user: UserUpdateInput): User!
 }

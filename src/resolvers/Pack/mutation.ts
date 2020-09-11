@@ -8,9 +8,10 @@ export const createPack = mutationField('createPack', {
   type: 'Pack',
   args: {
     title: stringArg({ required: true }),
+    description: stringArg({ nullable: true }),
     timeout: intArg({ nullable: true }),
   },
-  resolve: async (parent, { title, timeout }, ctx) => {
+  resolve: async (parent, { title, description, timeout }, ctx) => {
     const userId = getUserId(ctx)
     const hashedTitle = await hash(title, 10)
 
@@ -18,6 +19,7 @@ export const createPack = mutationField('createPack', {
       data: {
         hash: hashedTitle,
         title,
+        description,
         timeout,
         author: { connect: { id: userId } },
       },
@@ -30,12 +32,14 @@ export const updatePack = mutationField('updatePack', {
   args: {
     id: intArg({ required: true }),
     title: stringArg({ required: true }),
-    timeout: intArg({ default: null }),
+    description: stringArg({ nullable: true }),
+    timeout: intArg({ nullable: null }),
   },
-  resolve: (parent, { id, title, timeout }, ctx) => {
+  resolve: (parent, { id, title, description, timeout }, ctx) => {
     return ctx.prisma.pack.update({
       data: {
         title,
+        description,
         timeout,
       },
       where: { id }
